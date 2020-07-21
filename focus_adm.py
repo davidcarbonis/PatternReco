@@ -62,12 +62,12 @@ while(test):
     HTlines = cv2HoughLines(masked_edges, HTthreshold, min_line_length, max_line_gap, probabilisticHT)
 
     ## calculate variance of the lapacian to determine focus/blur
-##    laplacianVar = cv2.Laplacian(blur_greyscale, cv2.CV_64F).var() ##default and option 2
-    laplacianVar = cv2.Laplacian(masked_edges, cv2.CV_64F).var()
+    laplacianVar = cv2.Laplacian(frame, cv2.CV_64F).var() ##apply laplacian to greyscale image
+##    laplacianVar = cv2.Laplacian(grey_frame, cv2.CV_64F).var() ##apply laplacian to greyscale image
 
 ######
 
-    threshold = 0.1
+    threshold = 0.01
     xy = find_intersections(HTlines, threshold)
     
     cv2.namedWindow('Original',cv2.WINDOW_NORMAL)
@@ -82,20 +82,28 @@ while(test):
     if xy is not None:
         for corner in xy:
             cv2.circle(line_copy, tuple(corner), 25, (0,255,0), 5)
-    if (len(xy) == 1) : singleCornerCounter += 1
-    elif (len(xy) != 1) : singleCornerCounter = 0
+        if (len(xy) == 1) : singleCornerCounter += 1
+        else : singleCornerCounter = 0
+    else : singleCornerCounter = 0
 
     cv2.putText(line_copy, "{}: {:.2f}".format("Variance of Laplacian: ", laplacianVar), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-    if (singleCornerCounter == 2) : time.sleep(10)
-#    if (singleCornerCounter == 3 and laplacianVar > 0.75) : time.sleep(10)
-#    if (laplacianVar > 100) : time.sleep(10)
+    if xy is not None : cv2.putText(line_copy, "{}: {:.2f}".format("Number of corners: ", len(xy)), (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    else : cv2.putText(line_copy, "{}: {:.2f}".format("Number of corners = 0 "), (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    cv2.putText(line_copy, "{}: {:.2f}".format("1 corner counter: " , singleCornerCounter), (10,150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    cv2.putText(line_copy, "{}: {:.2f}".format("Number of HTlines: ", len(HTlines)), (10, 210), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
 
     cv2.namedWindow('Edges',cv2.WINDOW_NORMAL)    
     cv2.imshow('Edges',line_copy)
     cv2.resizeWindow('Edges', 900,500)
+
+    if (singleCornerCounter == 1) : time.sleep(10)
+#    if (singleCornerCounter == 3 and laplacianVar > 0.75) : time.sleep(10)
+#    if (laplacianVar > 100) : time.sleep(10)
+
     key = cv2.waitKey(1) 
     if key == ('c'):
         continue
+
 
 # Close the window
 cap.release()
