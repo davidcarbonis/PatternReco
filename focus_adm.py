@@ -22,7 +22,8 @@ while(test):
 
     ## Inform viewer that picture is in focus
     if (singleCornerCounter == 1 and len(HTlines) < 4 ) : ## default condition
-##    if (singleCornerCounter == 1 and len(HTlines) < 4 and laplacianVar > 2.3) : ## laplacian condition applied
+##    if (singleCornerCounter == 1 and len(HTlines) < 4 and variance > 2.3) : ## laplacian condition applied
+##    if (singleCornerCounter == 1 and len(HTlines) < 4 and variance > 150) : ## canny condition applied
         cv2.putText(line_copy, "In focus!", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
         time.sleep(10)
 
@@ -69,7 +70,8 @@ while(test):
     HTlines = cv2HoughLines(masked_edges, HTthreshold, min_line_length, max_line_gap, probabilisticHT)
 
     ## calculate variance of the lapacian to determine focus/blur
-    laplacianVar = cv2.Laplacian(frame, cv2.CV_64F).var() ##apply laplacian to image
+#    variance = cv2.Laplacian(frame, cv2.CV_64F).var() ##apply laplacian to image
+    variance= cv2.Canny(frame, postMaskCannyThreshold1, postMaskCannyThreshold2, postMaskCannyAperture).var() ##apply laplacian to image
 
 ######
 
@@ -93,11 +95,11 @@ while(test):
     else : singleCornerCounter = 0
 
     ## Debug text on screen
-#    cv2.putText(line_copy, "{}: {:.2f}".format("Variance of Laplacian: ", laplacianVar), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-#    if xy is not None : cv2.putText(line_copy, "{}: {:.2f}".format("Number of corners: ", len(xy)), (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-#    else : cv2.putText(line_copy, "{}: {:.2f}".format("Number of corners = 0"), (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-#   cv2.putText(line_copy, str(singleCornerCounter), (10,150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-#    cv2.putText(line_copy, "{}: {:.2f}".format("Number of HTlines: ", len(HTlines)), (10, 210), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    cv2.putText(line_copy, "{}: {:.2f}".format("Variance of filter kernel ", variance), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    if xy is not None : cv2.putText(line_copy, "{}: {:.2f}".format("Number of corners: ", len(xy)), (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    else : cv2.putText(line_copy, "{}: {:.2f}".format("Number of corners = 0"), (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    cv2.putText(line_copy, str(singleCornerCounter), (10,150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    cv2.putText(line_copy, "{}: {:.2f}".format("Number of HTlines: ", len(HTlines)), (10, 210), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
 
     cv2.namedWindow('Edges',cv2.WINDOW_NORMAL)    
     cv2.imshow('Edges',line_copy)
