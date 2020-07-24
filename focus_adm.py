@@ -105,6 +105,14 @@ while(test):
     cv2.imshow('Edges',line_copy)
     cv2.resizeWindow('Edges', 900,500)
 
+    cv2.namedWindow('Floodfill',cv2.WINDOW_NORMAL)
+    cv2.imshow('Floodfill', floodfill)
+    cv2.resizeWindow('Floodfill', 900,500)
+
+    cv2.namedWindow('Masked Edges',cv2.WINDOW_NORMAL)
+    cv2.imshow('Masked Edges',masked_edges)
+    cv2.resizeWindow('Masked Edges', 900,500)
+
     key = cv2.waitKey(1) 
     if key == ('c'):
         continue
